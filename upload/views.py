@@ -9,7 +9,7 @@ Backend Script for fetching data using the Microsoft Computer Vision API
 
 import time
 import requests
-
+import re
 import operator
 import numpy as np
 from bs4 import BeautifulSoup
@@ -25,6 +25,8 @@ from os.path import splitext, basename
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
+import cv2.cv as cv
+import cv2
 
 from django.shortcuts import render
 from django.http import HttpResponse,HttpResponseRedirect
@@ -32,6 +34,9 @@ from . import forms
 from . import models
 # Create your views here.
 # Variables
+
+a=0.9
+vertical=0.8
 
 _url = 'https://api.projectoxford.ai/vision/v1/analyses'
 _key = 'c60ef392e53a4b96bb51304ec2463a96'  # Primary Key
@@ -188,16 +193,10 @@ def getstring(answer):
 					pass
 			#"""
 			#"""
-			for j in range(0,len(text)):
-				if isNormal(text[j]):
-					if text[j]==" " and flag==0:
-						pass 
-					else:
-						flag=1
-						if text[j]==",":
-							stripped=stripped+".."
-						else:
-							stripped=stripped+str(text[j])
+			text=re.sub(' +',' ',text)
+			text=re.sub('"','',text)
+			text=text[2:]
+			text=text[:-2]
 			#"""
 			#print stripped[0], stripped[len(stripped)-1], len(stripped) 
 			#print stripped
@@ -218,24 +217,15 @@ def getstring(answer):
 				if pool[i][1]==minSpaces:
 					selection=pool[i][0]
 			"""
-			if isPerfect(stripped[0]):
-				pool.append(stripped)
-			else:
-				print "ek ganda wala mila"
-			#pool.append(stripped)
+			print("after removing spaces")
+			print(text[-1:])
+			pool.append(text)
 			#quotes.writerow([selection])
 			#"""
 		#print pool
-		for i in range(0,len(pool)):
-			minSpaces=min(minSpaces,len(pool[i]))
+		pool=sorted(pool,key=lambda x: len(x))
 		#print minSpaces
-		for i in range(0,len(pool)):
-			#if pool[i][0]==" " or pool[i][0]==":":
-			#	pass
-			if len(pool[i])==minSpaces:
-				selection=pool[i]
-			else:
-				pass
+		selection=pool[1]
 		#print selection
 		return selection
 	return "no"
@@ -320,6 +310,37 @@ def showimage(request):
 
 		print rel_tag
 		quote=getstring(rel_tag)
+		
+		print img_name
+		cvImg = cv2.imread(img_name)
+		H, W ,ch = cvImg.shape
+		print W, H
+
+		msg = quote
+
+		img = Image.open(img_name)
+		draw = ImageDraw.Draw(img)
+		font = ImageFont.truetype("/usr/share/fonts/truetype/ubuntu-font-family/Ubuntu-B.ttf", int(W/len(msg))+10)
+		w,h = font.getsize(msg)
+
+		#cvImg=cv2.imread("sample-out.jpg",1)
+		for y in range(int(H*vertical-h*0.8), int(H*vertical+h)):
+			for x in range(0, W):
+				cvImg[y][x][0]=cvImg[y][x][0]*a
+				cvImg[y][x][1]=cvImg[y][x][0]*a
+				cvImg[y][x][2]=cvImg[y][x][0]*a
+		cv2.imwrite(img_name+file_ext,cvImg)
+
+		img_loc = img_name+file_ext
+		img = Image.open(img_name+file_ext)
+		draw = ImageDraw.Draw(img)
+		font = ImageFont.truetype("/usr/share/fonts/truetype/ubuntu-font-family/Ubuntu-B.ttf", int(W/len(msg))+10)
+		draw.text(((W-w)/2, H*vertical-h/2),msg,(255,255,255),font=font)
+		img.save("/home/archit/django-tutorial/tetra/upload/static/"+img_loc)
+
+		return render(request,'upload/image.html',{'img_url':img_url,'quote':quote, 'img':img_loc})
+
+		"""
 		msg = quote
 		img = Image.open(img_name)
 		draw = ImageDraw.Draw(img)
@@ -332,7 +353,7 @@ def showimage(request):
 		print(file_ext)
 		img.save("/home/archit/django-tutorial/tetra/upload/static/"+img_loc)
 		return render(request,'upload/image.html',{'img_url':img_url,'quote':quote, 'img':img_loc})
-
+		"""
 	else:
 		return render(request,'upload/geturl.html')
 
