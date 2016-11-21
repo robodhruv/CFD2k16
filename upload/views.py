@@ -19,6 +19,8 @@ import csv
 import matplotlib.pyplot as plt
 from operator import itemgetter
 
+from urlparse import urlparse
+from os.path import splitext, basename
 
 
 from django.shortcuts import render
@@ -33,6 +35,8 @@ _key = 'c60ef392e53a4b96bb51304ec2463a96'  # Primary Key
 
 _url2 = 'https://api.projectoxford.ai/emotion/v1.0/recognize'
 _key2 = '12b068b59d2949eeb7940e34cedbad41'
+
+img_name = ""
 
 _maxNumRetries = 10
 mode = "URL" # Set to URL/Local
@@ -247,10 +251,15 @@ def list(request):
 		form=forms.uploadform()
 		return render(request,'upload/upload.html',{'form':form})
 
+
 def showimage(request):
+	global img_name
 	if request.method=='POST':
 
 		img_url = request.POST['img_url']
+		disassembled = urlparse(img_url)
+		img_name, file_ext = splitext(basename(disassembled.path))
+		urllib.urlretrieve(img_url, img_name)
 
 		rel_tag = 'nature'
 
