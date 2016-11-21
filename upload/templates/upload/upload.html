@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>WELCOME</title>
+</head>
+<body>
+
+{% if form.errors %}
+	<p>invalid  </p>
+{% endif %}
+
+<form action="" method="post"> 
+<div class="form-group"> {% csrf_token %}
+{{form.as_p}}
+<!-- <label for="Assignment_CourseId"> CourseId </label>
+<input type="text" name="Assignment_CourseId" value="" id="Assignment_CourseId">
+<label for="Assignment_Name"> Assignment Name </label>
+<input type="text" name="Assignment_Name" value="" id="Assignment_Name">
+<label for="Assignment_date_submission"> Submission Date </label>
+<input type="date" name="Assignment_date_submission" value="" id="Assignment_date_submission">
+<label for="Assignment_time_submission"> Submission Time </label>
+<input type="datetime" name="Assignment_time_submission" value="" id="Assignment_time_submission"> -->
+</div>
+<input class="CreateButton" type="submit" value="Create" class="btn btn-default"/>
+</form>
+</body>
+</html>

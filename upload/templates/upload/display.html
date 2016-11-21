@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>WELCOME</title>
+</head>
+<body>
+
+{% if form.errors %}
+	<p>invalid  </p>
+{% endif %}
+Here is the image you uploaded
+{% if documents %}
+ <ul>
+ 	{% for document in documents %}
+ 	<li><img src="{{ document.docfile.url }}" alt="not available"> </li>
+ 	{% endfor %}
+ </ul>
+ {% else %}
+ <p> No documents </p>
+ {% endif %}
+<!-- <img src="{{ image.url }}" alt="not available"> -->
+</body>
+</html>
