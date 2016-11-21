@@ -267,12 +267,12 @@ def showimage(request):
 
 			result = processRequest( json, data, headers, params )
 
-		if result is not None:
-			for i in range(len(result['tags'])):
-				print (result['tags'][i]['name'])
-			list1=result['tags'][0]['name']
+		for i in range(len(result['tags'])):
+		rel_tag = result['tags'][i]['name']
+		if (rel_tag not in taboo):
+			break
 
-		quote=getstring(list1)
+		quote=getstring(rel_tag)
 
 		return render(request,'upload/image.html',{'img_url':img_url,'list1':list1,'quote':quote})
 
