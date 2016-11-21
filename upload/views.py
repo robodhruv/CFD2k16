@@ -29,15 +29,19 @@ from . import models
 
 _url = 'https://api.projectoxford.ai/vision/v1/analyses'
 _key = 'c60ef392e53a4b96bb51304ec2463a96'  # Primary Key
+
+_url2 = 'https://api.projectoxford.ai/emotion/v1.0/recognize'
+_key2 = '12b068b59d2949eeb7940e34cedbad41'
+
 _maxNumRetries = 10
 mode = "URL" # Set to URL/Local
 master = [" ","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9","0",".",",",";","!",":","(",")","{","}","[","]","/","-","=","?"]
 masterMax = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9","0"]
-taboo = ["man", "outdoor", "woman", "person", "surroundings"]
+taboo = ["man", "outdoor", "woman", "person", "surroundings", "metal"]
 
 def start(request):
 	return render(request,'upload/index.html')
-def processRequest(json, data, headers, params):
+def processRequest(url, json, data, headers, params):
 	"""
 	Helper function to process the request to Project Oxford
 
@@ -54,7 +58,7 @@ def processRequest(json, data, headers, params):
 
 		response = requests.request(
 			'post',
-			_url,
+			url,
 			json=json,
 			data=data,
 			headers=headers,
@@ -214,7 +218,7 @@ def getstring(answer):
 			#pool.append(stripped)
 			#quotes.writerow([selection])
 			#"""
-		print pool
+		#print pool
 		for i in range(0,len(pool)):
 			minSpaces=min(minSpaces,len(pool[i]))
 		#print minSpaces
@@ -225,7 +229,7 @@ def getstring(answer):
 				selection=pool[i]
 			else:
 				pass
-		print selection
+		#print selection
 		return selection
 	return "no"
 
@@ -247,8 +251,7 @@ def showimage(request):
 
 		img_url = request.POST['img_url']
 
-
-		result = ""
+		rel_tag = 'nature'
 
 		"""
 		Analysis of the image retrieved via a URL
@@ -257,47 +260,53 @@ def showimage(request):
 			# URL direction to image
 			urlImage = img_url
 
-			# Computer Vision parameters
-			params = { 'visualFeatures' : 'Tags, Adult'} 
+			try:
+				# Emotion API parameters
+				params = None 
 
-			headers = dict()
-			headers['Ocp-Apim-Subscription-Key'] = _key
-			headers['Content-Type'] = 'application/json' 
+				headers = dict()
+				headers['Ocp-Apim-Subscription-Key'] = _key2
+				headers['Content-Type'] = 'application/json' 
 
-			json = { 'url': urlImage } 
-			data = None
+				json = { 'url': urlImage } 
+				data = None
 
-			result = processRequest( json, data, headers, params )
+				result = processRequest(_url2, json, data, headers, params)
 
-		else:
-			# Load raw image file into memory
-			pathToFileInDisk = r'D:\tmp\3.jpg'
-			with open( pathToFileInDisk, 'rb' ) as f:
-				data = f.read()
-				
-			# Computer Vision parameters
-			params = { 'visualFeatures' : 'Color,Categories'} 
+				list1 = ()
+				if result is not None:
+					for key in sorted(result[0]['scores'].iterkeys()):
+						list1 = list1 + (key, )
 
-			headers = dict()
-			headers['Ocp-Apim-Subscription-Key'] = _key
-			headers['Content-Type'] = 'application/octet-stream'
+					rel_tag = list1[0]
+					
+			except Exception, e:
+				# Computer Vision parameters
+				params = { 'visualFeatures' : 'Tags, Adult'} 
 
-			json = None
+				headers = dict()
+				headers['Ocp-Apim-Subscription-Key'] = _key
+				headers['Content-Type'] = 'application/json' 
 
-			result = processRequest( json, data, headers, params )
+				json = { 'url': urlImage } 
+				data = None
 
-		rel_tag = 'nature'
+				result = processRequest(_url, json, data, headers, params )
 
-		if result is not None:
-		#	for i in range(len(result['tags'])):
-		#		print result['tags'][i]['name']
 
-		#	for i in range(len(result['tags'])):
-		#		rel_tag = result['tags'][i]['name']
-		#		if (rel_tag not in taboo):
-		#			break
-			randit = np.random.randit(5, size=1)
-			rel_tag = result['tags'][randit]['name']
+				if result is not None:
+				#	for i in range(len(result['tags'])):
+				#		print result['tags'][i]['name']
+
+				#	for i in range(len(result['tags'])):
+				#		rel_tag = result['tags'][i]['name']
+				#		if (rel_tag not in taboo):
+				#			break
+					for i in range(4):
+						randit = np.random.randint(5, size=1)
+						rel_tag = result['tags'][randit]['name']
+						if (rel_tag not in taboo):
+							break
 
 		print rel_tag
 		quote=getstring(rel_tag)
