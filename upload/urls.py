@@ -17,7 +17,7 @@ from django.conf.urls import url,include
 from django.contrib import admin
 from . import views
 urlpatterns = [
-    url(r'^$', views.list),
+    url(r'^$', views.start),
     url(r'^image$', views.showimage),
 
 ]
