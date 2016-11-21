@@ -162,7 +162,6 @@ def getstring(answer):
 
 	#quotes=csv.writer(open("quotes.csv","w"))
 	
-	
 	if len(soup.find('body').find_all('div')[0].find_all("div", class_="quoteText"))>0:
 		pool=[]
 		print len(soup.find('body').find_all('div')[0].find_all("div", class_="quoteText"))
