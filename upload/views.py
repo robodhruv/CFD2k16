@@ -145,7 +145,6 @@ def isNormal(character):
 	return 0
 
 def isPerfect(character):
-	#master.ge
 	for i in range(0, len(masterMax)):
 		if character==masterMax[i]:
 			return 1
@@ -169,7 +168,7 @@ def getstring(answer):
 		for quote in range(0,len(soup.find('body').find_all('div')[0].find_all("div", class_="quoteText"))):
 			tags=0
 			fullText=""
-			for tag in range(0, len(soup.find('body').find_all('div')[0].find_all("div", class_="quoteText")[quote].contents)): 
+			for tag in range(0, int(len(soup.find('body').find_all('div')[0].find_all("div", class_="quoteText")[quote].contents)/3)): 
 				if str(type(soup.find('body').find_all('div')[0].find_all("div", class_="quoteText")[quote].contents[tag]))=="<class 'bs4.element.NavigableString'>":
 					fullText=fullText+soup.find('body').find_all('div')[0].find_all("div", class_="quoteText")[quote].contents[tag].encode('ascii','ignore')
 					tags=tags+1	
@@ -328,9 +327,9 @@ def showimage(request):
 		font = ImageFont.truetype("/usr/share/fonts/truetype/ubuntu-font-family/Ubuntu-B.ttf", int(W/(len(msg)-5)))
 		w, h = font.getsize(msg)
 		draw.text(((W-w)/2, h/2),msg,(255,255,255),font=font)
-	
-		img.save(img_name+file_ext)
-		return render(request,'upload/image.html',{'img_url':img_url,'quote':quote})
+		img_loc = img_name+file_ext
+		img.save(img_loc)
+		return render(request,'upload/image.html',{'img_url':img_url,'quote':quote, 'img':img_loc})
 
 	else:
 		return render(request,'upload/geturl.html')
