@@ -9,7 +9,7 @@ Backend Script for fetching data using the Microsoft Computer Vision API
 
 import time
 import requests
-
+import cv2
 import operator
 import numpy as np
 
@@ -17,12 +17,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-
-from django.shortcuts import render
-from django.http import HttpResponse,HttpResponseRedirect
-from . import forms
-from . import models
-# Create your views here.
 # Variables
 
 _url = 'https://api.projectoxford.ai/vision/v1/analyses'
@@ -99,90 +93,44 @@ def renderResultOnImage( result, img ):
 		categoryName = sorted(result['categories'], key=lambda x: x['score'])[0]['name']
 		cv2.putText( img, categoryName, (30,70), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,0,0), 3 )
 
+result = ""
 
-def home(request):
-	return HttpResponse("Hello")
+"""
+Analysis of the image retrieved via a URL
+"""
+if mode == "URL":
+	# URL direction to image
+	urlImage = 'http://images4.fanpop.com/image/photos/18700000/Cool-Desert-LandScape-fullmetal-alchemist-manga-18757117-1024-768.jpg'
 
+	# Computer Vision parameters
+	params = { 'visualFeatures' : 'Tags, Adult'} 
 
-def upload_pic(request):
-	if request.method=="POST":
-		print("post")
+	headers = dict()
+	headers['Ocp-Apim-Subscription-Key'] = _key
+	headers['Content-Type'] = 'application/json' 
+
+	json = { 'url': urlImage } 
+	data = None
+
+	result = processRequest( json, data, headers, params )
+
+else:
+	# Load raw image file into memory
+	pathToFileInDisk = r'D:\tmp\3.jpg'
+	with open( pathToFileInDisk, 'rb' ) as f:
+		data = f.read()
 		
-		image= request.POST['file']
-		print("image recieved")
-		return render(request,'upload/display.html',{'image':image})
+	# Computer Vision parameters
+	params = { 'visualFeatures' : 'Color,Categories'} 
 
-	else:
-		print("not post")
-		form=forms.uploadform()
-		return render(request,'upload/upload.html',{'form':form})
+	headers = dict()
+	headers['Ocp-Apim-Subscription-Key'] = _key
+	headers['Content-Type'] = 'application/octet-stream'
 
-def list(request):
-	print("hello")
-	if request.method=='POST':
-		form=forms.uploadform(request.POST)
-		newd = models.ExampleModel(model_pic = request.FILES['docfile'])
-		newd.save()
-		all_objects=models.ExampleModel.objects.all()
-		return render(request,'upload/display.html',{'documents':all_objects})
-		#return HttpResponse("Form not valid")
-	else:
-		form=forms.uploadform()
-		return render(request,'upload/upload.html',{'form':form})
+	json = None
 
-def showimage(request):
-	if request.method=='POST':
+	result = processRequest( json, data, headers, params )
 
-		img_url = request.POST['img_url']
-
-
-		result = ""
-
-		"""
-		Analysis of the image retrieved via a URL
-		"""
-		if mode == "URL":
-			# URL direction to image
-			urlImage = img_url
-
-			# Computer Vision parameters
-			params = { 'visualFeatures' : 'Tags, Adult'} 
-
-			headers = dict()
-			headers['Ocp-Apim-Subscription-Key'] = _key
-			headers['Content-Type'] = 'application/json' 
-
-			json = { 'url': urlImage } 
-			data = None
-
-			result = processRequest( json, data, headers, params )
-
-		else:
-			# Load raw image file into memory
-			pathToFileInDisk = r'D:\tmp\3.jpg'
-			with open( pathToFileInDisk, 'rb' ) as f:
-				data = f.read()
-				
-			# Computer Vision parameters
-			params = { 'visualFeatures' : 'Color,Categories'} 
-
-			headers = dict()
-			headers['Ocp-Apim-Subscription-Key'] = _key
-			headers['Content-Type'] = 'application/octet-stream'
-
-			json = None
-
-			result = processRequest( json, data, headers, params )
-
-		if result is not None:
-			for i in range(len(result['tags'])):
-				print (result['tags'][i]['name'])
-			list1=result['tags'][0]['name']
-
-
-		return render(request,'upload/image.html',{'img_url':img_url,'list1':list1})
-
-	else:
-		return render(request,'upload/geturl.html')
-
-
+if result is not None:
+	for i in range(len(result['tags'])):
+		print (result['tags'][i]['name'])
