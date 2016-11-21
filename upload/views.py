@@ -289,13 +289,15 @@ def showimage(request):
 		rel_tag = 'nature'
 
 		if result is not None:
-			for i in range(len(result['tags'])):
-				print result['tags'][i]['name']
+		#	for i in range(len(result['tags'])):
+		#		print result['tags'][i]['name']
 
-			for i in range(len(result['tags'])):
-				rel_tag = result['tags'][i]['name']
-				if (rel_tag not in taboo):
-					break
+		#	for i in range(len(result['tags'])):
+		#		rel_tag = result['tags'][i]['name']
+		#		if (rel_tag not in taboo):
+		#			break
+			randit = np.random.randit(5, size=1)
+			rel_tag = result['tags'][randit]['name']
 
 		print rel_tag
 		quote=getstring(rel_tag)
