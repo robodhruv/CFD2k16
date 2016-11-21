@@ -131,6 +131,17 @@ else:
 
 	result = processRequest( json, data, headers, params )
 
+#list_out = ()
+rel_tag = 'nature'
+taboo = ('man', 'woman', 'outdoor', 'walking', 'surroundings')
+
 if result is not None:
+	#for i in range(len(result['tags'])):
+		#list_out = list_out + (result['tags'][i]['name'], )
+		#print (result['tags'][i]['name'])
+
 	for i in range(len(result['tags'])):
-		print (result['tags'][i]['name'])
+		rel_tag = result['tags'][i]['name']
+		if (rel_tag not in taboo):
+			break
+print rel_tag
