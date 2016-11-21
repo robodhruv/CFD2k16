@@ -42,6 +42,7 @@ _key2 = '12b068b59d2949eeb7940e34cedbad41'
 img_name = ""
 
 _maxNumRetries = 10
+
 mode = "URL" # Set to URL/Local
 master = [" ","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9","0",".",",",";","!",":","(",")","{","}","[","]","/","-","=","?"]
 masterMax = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9","0"]
@@ -328,7 +329,9 @@ def showimage(request):
 		w, h = font.getsize(msg)
 		draw.text(((W-w)/2, h/2),msg,(255,255,255),font=font)
 		img_loc = img_name+file_ext
-		img.save(img_loc)
+		print(img_name)
+		print(file_ext)
+		img.save("/home/archit/django-tutorial/tetra/upload/static/"+img_loc)
 		return render(request,'upload/image.html',{'img_url':img_url,'quote':quote, 'img':img_loc})
 
 	else:
