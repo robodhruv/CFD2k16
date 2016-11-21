@@ -267,10 +267,13 @@ def showimage(request):
 
 			result = processRequest( json, data, headers, params )
 
-		for i in range(len(result['tags'])):
-		rel_tag = result['tags'][i]['name']
-		if (rel_tag not in taboo):
-			break
+		rel_tag = 'nature'
+
+		if result is not None:
+			for i in range(len(result['tags'])):
+			rel_tag = result['tags'][i]['name']
+			if (rel_tag not in taboo):
+				break
 
 		quote=getstring(rel_tag)
 
