@@ -17,6 +17,7 @@ import urllib
 import webbrowser
 import csv
 import matplotlib.pyplot as plt
+from operator import itemgetter
 
 
 
@@ -275,10 +276,8 @@ def showimage(request):
 
 				list1 = ()
 				if result is not None:
-					for key in sorted(result[0]['scores'].iterkeys()):
-						list1 = list1 + (key, )
-
-					rel_tag = list1[0]
+					sorted(result[0]['scores'].items(), key=itemgetter(1), reverse=True)
+					rel_tag = list1[0][0]
 					
 			except Exception, e:
 				# Computer Vision parameters

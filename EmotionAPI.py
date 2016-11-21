@@ -12,7 +12,7 @@ import requests
 import cv2
 import operator
 import numpy as np
-
+from operator import itemgetter
 
 import matplotlib.pyplot as plt
 
@@ -132,6 +132,5 @@ else:
 
 	result = processRequest( json, data, headers, params )
 
-#list_out = ()
-for key in sorted(result[0]['scores'].iterkeys()):
-	print (key)
+list_out = sorted(result[0]['scores'].items(), key=itemgetter(1), reverse=True)
+print list_out[0][0]
