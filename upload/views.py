@@ -22,6 +22,9 @@ from operator import itemgetter
 from urlparse import urlparse
 from os.path import splitext, basename
 
+from PIL import Image
+from PIL import ImageFont
+from PIL import ImageDraw
 
 from django.shortcuts import render
 from django.http import HttpResponse,HttpResponseRedirect
@@ -277,18 +280,18 @@ def showimage(request):
 				headers = dict()
 				headers['Ocp-Apim-Subscription-Key'] = _key2
 				headers['Content-Type'] = 'application/json' 
-
+				
 				json = { 'url': urlImage } 
 				data = None
-
+				
 				result = processRequest(_url2, json, data, headers, params)
-
-				list1 = ()
+				
+				
 				if result is not None:
-					sorted(result[0]['scores'].items(), key=itemgetter(1), reverse=True)
+					list1 = sorted(result[0]['scores'].items(), key=itemgetter(1), reverse=True)
 					rel_tag = list1[0][0]
 					
-			except Exception, e:
+			except:
 				# Computer Vision parameters
 				params = { 'visualFeatures' : 'Tags, Adult'} 
 
@@ -318,7 +321,15 @@ def showimage(request):
 
 		print rel_tag
 		quote=getstring(rel_tag)
-
+		msg = quote
+		img = Image.open(img_name)
+		draw = ImageDraw.Draw(img)
+		W, H = img.size
+		font = ImageFont.truetype("/usr/share/fonts/truetype/ubuntu-font-family/Ubuntu-B.ttf", int(W/(len(msg)-5)))
+		w, h = font.getsize(msg)
+		draw.text(((W-w)/2, h/2),msg,(255,255,255),font=font)
+	
+		img.save(img_name+file_ext)
 		return render(request,'upload/image.html',{'img_url':img_url,'quote':quote})
 
 	else:

@@ -103,7 +103,7 @@ Analysis of the image retrieved via a URL
 """
 if mode == "URL":
 	# URL direction to image
-	urlImage = 'http://www.thewrap.com/wp-content/uploads/2015/11/Donald-Trump.jpg'
+	urlImage = 'http://www.bet.com/topics/b/barack-obama/_jcr_content/image.heroimage.dimg/__1358446726593/111412-politics-barack-obama-press-conference.jpg'
 
 
 	headers = dict()
