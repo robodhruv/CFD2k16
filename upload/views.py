@@ -32,7 +32,8 @@ _key = 'c60ef392e53a4b96bb51304ec2463a96'  # Primary Key
 _maxNumRetries = 10
 mode = "URL" # Set to URL/Local
 master = [" ","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9","0",".",",",";","!",":","(",")","{","}","[","]","/","-","=","?"]
-
+masterMax = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9","0"]
+taboo = ["man", "outdoor", "woman", "person", "surroundings"]
 def processRequest(json, data, headers, params):
 	"""
 	Helper function to process the request to Project Oxford
@@ -128,6 +129,15 @@ def isNormal(character):
 			pass
 	return 0
 
+def isPerfect(character):
+	#master.ge
+	for i in range(0, len(masterMax)):
+		if character==masterMax[i]:
+			return 1
+		else:
+			pass
+	return 0
+
 
 def getstring(answer):
 	tag = answer
@@ -194,14 +204,20 @@ def getstring(answer):
 				if pool[i][1]==minSpaces:
 					selection=pool[i][0]
 			"""
-			pool.append(stripped)
+			if isPerfect(stripped[0]):
+				pool.append(stripped)
+			else:
+				print "ek ganda wala mila"
+			#pool.append(stripped)
 			#quotes.writerow([selection])
 			#"""
-		#print pool
+		print pool
 		for i in range(0,len(pool)):
 			minSpaces=min(minSpaces,len(pool[i]))
 		#print minSpaces
 		for i in range(0,len(pool)):
+			#if pool[i][0]==" " or pool[i][0]==":":
+			#	pass
 			if len(pool[i])==minSpaces:
 				selection=pool[i]
 			else:
@@ -271,13 +287,17 @@ def showimage(request):
 
 		if result is not None:
 			for i in range(len(result['tags'])):
-			rel_tag = result['tags'][i]['name']
-			if (rel_tag not in taboo):
-				break
+				print result['tags'][i]['name']
 
+			for i in range(len(result['tags'])):
+				rel_tag = result['tags'][i]['name']
+				if (rel_tag not in taboo):
+					break
+
+		print rel_tag
 		quote=getstring(rel_tag)
 
-		return render(request,'upload/image.html',{'img_url':img_url,'list1':list1,'quote':quote})
+		return render(request,'upload/image.html',{'img_url':img_url,'quote':quote})
 
 	else:
 		return render(request,'upload/geturl.html')
