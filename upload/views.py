@@ -225,7 +225,7 @@ def getstring(answer):
 		#print pool
 		pool=sorted(pool,key=lambda x: len(x))
 		#print minSpaces
-		selection=pool[1]
+		selection=[pool[0], pool[1]]
 		#print selection
 		return selection
 	return "no"
@@ -253,7 +253,7 @@ def showimage(request):
 		img_name, file_ext = splitext(basename(disassembled.path))
 		urllib.urlretrieve(img_url, img_name)
 
-		rel_tag = 'nature'
+		rel_tag = ['nature']
 
 		"""
 		Analysis of the image retrieved via a URL
@@ -278,7 +278,7 @@ def showimage(request):
 				
 				if result is not None:
 					list1 = sorted(result[0]['scores'].items(), key=itemgetter(1), reverse=True)
-					rel_tag = list1[0][0]
+					rel_tag[0] = list1[0][0]
 					
 			except:
 				# Computer Vision parameters
@@ -304,56 +304,59 @@ def showimage(request):
 				#			break
 					for i in range(4):
 						randit = np.random.randint(5, size=1)
-						rel_tag = result['tags'][randit]['name']
+						rel_tag[i] = result['tags'][randit]['name']
 						if (rel_tag not in taboo):
 							break
 
 		print rel_tag
-		quote=getstring(rel_tag)
-		
-		print img_name
-		cvImg = cv2.imread(img_name)
-		H, W ,ch = cvImg.shape
-		print W, H
 
-		msg = quote
+		for imgTag in range(0,len(rel_tag)):
+			quote=getstring(rel_tag[imgTag])
+			
+			print img_name
+			cvImg = cv2.imread(img_name)
+			H, W ,ch = cvImg.shape
+			print W, H
 
-		img = Image.open(img_name)
-		draw = ImageDraw.Draw(img)
-		font = ImageFont.truetype("/usr/share/fonts/truetype/ubuntu-font-family/Ubuntu-B.ttf", int(W/len(msg))+10)
-		w,h = font.getsize(msg)
+			for option in range(0, len(quote)):
+				msg = quote[option]
 
-		#cvImg=cv2.imread("sample-out.jpg",1)
-		for y in range(int(H*vertical-h*0.8), int(H*vertical+h)):
-			for x in range(0, W):
-				cvImg[y][x][0]=cvImg[y][x][0]*a
-				cvImg[y][x][1]=cvImg[y][x][0]*a
-				cvImg[y][x][2]=cvImg[y][x][0]*a
-		cv2.imwrite(img_name+file_ext,cvImg)
+				img = Image.open(img_name)
+				draw = ImageDraw.Draw(img)
+				font = ImageFont.truetype("/usr/share/fonts/truetype/ubuntu-font-family/Ubuntu-B.ttf", int(W/len(msg))+10)
+				w,h = font.getsize(msg)
 
-		img_loc = img_name+file_ext
-		img = Image.open(img_name+file_ext)
-		draw = ImageDraw.Draw(img)
-		font = ImageFont.truetype("/usr/share/fonts/truetype/ubuntu-font-family/Ubuntu-B.ttf", int(W/len(msg))+10)
-		draw.text(((W-w)/2, H*vertical-h/2),msg,(255,255,255),font=font)
-		img.save("/home/archit/django-tutorial/tetra/upload/static/"+img_loc)
+				#cvImg=cv2.imread("sample-out.jpg",1)
+				for y in range(int(H*vertical-h*0.8), int(H*vertical+h)):
+					for x in range(0, W):
+						cvImg[y][x][0]=cvImg[y][x][0]*a
+						cvImg[y][x][1]=cvImg[y][x][0]*a
+						cvImg[y][x][2]=cvImg[y][x][0]*a
+				cv2.imwrite(img_name+str(rel_tag[imgTag])+str(option)+file_ext,cvImg)
 
-		return render(request,'upload/image.html',{'img_url':img_url,'quote':quote, 'img':img_loc})
+				img_loc = img_name+str(rel_tag[imgTag])+str(option)+file_ext
+				img = Image.open(img_name+str(rel_tag[imgTag])+str(option)+file_ext)
+				draw = ImageDraw.Draw(img)
+				font = ImageFont.truetype("/usr/share/fonts/truetype/ubuntu-font-family/Ubuntu-B.ttf", int(W/len(msg))+10)
+				draw.text(((W-w)/2, H*vertical-h/2),msg,(255,255,255),font=font)
+				img.save("/home/archit/django-tutorial/tetra/upload/static/"+img_loc)
 
-		"""
-		msg = quote
-		img = Image.open(img_name)
-		draw = ImageDraw.Draw(img)
-		W, H = img.size
-		font = ImageFont.truetype("/usr/share/fonts/truetype/ubuntu-font-family/Ubuntu-B.ttf", int(W/(len(msg)-5)))
-		w, h = font.getsize(msg)
-		draw.text(((W-w)/2, h/2),msg,(255,255,255),font=font)
-		img_loc = img_name+file_ext
-		print(img_name)
-		print(file_ext)
-		img.save("/home/archit/django-tutorial/tetra/upload/static/"+img_loc)
-		return render(request,'upload/image.html',{'img_url':img_url,'quote':quote, 'img':img_loc})
-		"""
+		return render(request,'upload/image.html',{'img_url':img_url,'quote':quote, 'img':img_name+str(rel_tag[0])+str(0)+file_ext, 'img1':img_name+str(rel_tag[0])+str(1)+file_ext, 'img2':img_name+str(rel_tag[1])+str(0)+file_ext, 'img3':img_name+str(rel_tag[1])+str(1)+file_ext})
+
+			"""
+			msg = quote
+			img = Image.open(img_name)
+			draw = ImageDraw.Draw(img)
+			W, H = img.size
+			font = ImageFont.truetype("/usr/share/fonts/truetype/ubuntu-font-family/Ubuntu-B.ttf", int(W/(len(msg)-5)))
+			w, h = font.getsize(msg)
+			draw.text(((W-w)/2, h/2),msg,(255,255,255),font=font)
+			img_loc = img_name+file_ext
+			print(img_name)
+			print(file_ext)
+			img.save("/home/archit/django-tutorial/tetra/upload/static/"+img_loc)
+			return render(request,'upload/image.html',{'img_url':img_url,'quote':quote, 'img':img_loc})
+			"""
 	else:
 		return render(request,'upload/geturl.html')
 
