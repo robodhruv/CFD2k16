@@ -185,6 +185,8 @@ def getstring(answer):
 			flag=0
 			if len(text)<10:
 				continue
+			elif len(text)>50:
+				continue
 			"""
 			for j in range(0, len(text)):
 				if isNormal(text[j]):
@@ -295,6 +297,10 @@ def showimage(request):
 
 
 				if result is not None:
+					if (rel_tag[0] in taboo):
+						break
+					elif (rel_tag[1] in taboo):
+						break
 				#	for i in range(len(result['tags'])):
 				#		print result['tags'][i]['name']
 
