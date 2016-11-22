@@ -217,8 +217,8 @@ def getstring(answer):
 				if pool[i][1]==minSpaces:
 					selection=pool[i][0]
 			"""
-			print("after removing spaces")
-			print(text[-1:])
+		
+			
 			pool.append(text)
 			#quotes.writerow([selection])
 			#"""
@@ -226,7 +226,7 @@ def getstring(answer):
 		pool=sorted(pool,key=lambda x: len(x))
 		#print minSpaces
 		selection=[pool[0], pool[1]]
-		#print selection
+		print selection
 		return selection
 	return "no"
 
@@ -253,7 +253,7 @@ def showimage(request):
 		img_name, file_ext = splitext(basename(disassembled.path))
 		urllib.urlretrieve(img_url, img_name)
 
-		rel_tag = ['nature']
+		rel_tag = []
 
 		"""
 		Analysis of the image retrieved via a URL
@@ -302,15 +302,17 @@ def showimage(request):
 				#		rel_tag = result['tags'][i]['name']
 				#		if (rel_tag not in taboo):
 				#			break
-					for i in range(4):
-						randit = np.random.randint(5, size=1)
-						rel_tag[i] = result['tags'][randit]['name']
-						if (rel_tag not in taboo):
-							break
+					randit = np.random.randint(5, size=1)
+					rel_tag.append(result['tags'][randit]['name'])
+					randit2 = np.random.randint(5, size=1)
+					rel_tag.append(result['tags'][randit2]['name'])
+
+					#if (rel_tag not in taboo):
+					#	break
 
 		print rel_tag
 
-		for imgTag in range(0,len(rel_tag)):
+		for imgTag in range(0,2):
 			quote=getstring(rel_tag[imgTag])
 			
 			print img_name
@@ -318,7 +320,7 @@ def showimage(request):
 			H, W ,ch = cvImg.shape
 			print W, H
 
-			for option in range(0, len(quote)):
+			for option in range(0, 2):
 				msg = quote[option]
 
 				img = Image.open(img_name)
@@ -343,7 +345,7 @@ def showimage(request):
 
 		return render(request,'upload/image.html',{'img_url':img_url,'quote':quote, 'img':img_name+str(rel_tag[0])+str(0)+file_ext, 'img1':img_name+str(rel_tag[0])+str(1)+file_ext, 'img2':img_name+str(rel_tag[1])+str(0)+file_ext, 'img3':img_name+str(rel_tag[1])+str(1)+file_ext})
 
-			"""
+		"""
 			msg = quote
 			img = Image.open(img_name)
 			draw = ImageDraw.Draw(img)
@@ -356,7 +358,7 @@ def showimage(request):
 			print(file_ext)
 			img.save("/home/archit/django-tutorial/tetra/upload/static/"+img_loc)
 			return render(request,'upload/image.html',{'img_url':img_url,'quote':quote, 'img':img_loc})
-			"""
+		s"""
 	else:
 		return render(request,'upload/geturl.html')
 
