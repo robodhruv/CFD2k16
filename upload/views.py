@@ -297,10 +297,7 @@ def showimage(request):
 
 
 				if result is not None:
-					if (rel_tag[0] in taboo):
-						break
-					elif (rel_tag[1] in taboo):
-						break
+
 				#	for i in range(len(result['tags'])):
 				#		print result['tags'][i]['name']
 
@@ -309,9 +306,15 @@ def showimage(request):
 				#		if (rel_tag not in taboo):
 				#			break
 					randit = np.random.randint(5, size=1)
+					while result['tags'][randit]['name'] in taboo:
+						randit = np.random.randint(5, size=1)
 					rel_tag.append(result['tags'][randit]['name'])
+					randit = np.random.randint(5, size=1)
+					while result['tags'][randit]['name'] in taboo:
+						randit = np.random.randint(5, size=1)
 					randit2 = np.random.randint(5, size=1)
 					rel_tag.append(result['tags'][randit2]['name'])
+
 
 					#if (rel_tag not in taboo):
 					#	break
